@@ -1,12 +1,12 @@
 name: Build WorkFlow
 on: 
-  push: 
-    branches:
-      - main
+  # push: 
+  #   branches:
+  #     - main
 
-  pull_request: 
-    branches:
-      - main 
+  # pull_request: 
+  #   branches:
+  #     - main 
   
   workflow_dispatch:
 
@@ -60,6 +60,7 @@ jobs:
       - name: Run tests on other branches
         if: github.ref != 'refs/heads/main'
         run: echo "Skipping unit tests and code analysis"
+
 
   # Security_scan:
   #   runs-on: ubuntu-latest
@@ -125,41 +126,41 @@ jobs:
   #       run: |
   #         docker build -f Docker-files/app/multistage/Dockerfile -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
   #         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-  Security_scan:
-    runs-on: ubuntu-latest
-    needs: Build
-    # [QUAN TRỌNG] Cấp quyền cho workflow đẩy cảnh báo lên tab Security của GitHub
-    permissions:
-      contents: read
-      security-events: write 
+  # Security_scan:
+  #   runs-on: ubuntu-latest
+  #   needs: Build
+  #   # [QUAN TRỌNG] Cấp quyền cho workflow đẩy cảnh báo lên tab Security của GitHub
+  #   permissions:
+  #     contents: read
+  #     security-events: write 
       
-    steps:
-      - name: Download Build Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: vprofile-app
-          path: .
+  #   steps:
+  #     - name: Download Build Artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: vprofile-app
+  #         path: .
 
-      - name: Install Trivy Tool
-        uses: aquasecurity/setup-trivy@v0.2.2
-        with:
-          cache: true
-        #  version: v0.58.2
+  #     - name: Install Trivy Tool
+  #       uses: aquasecurity/setup-trivy@v0.2.2
+  #       with:
+  #         cache: true
+  #       #  version: v0.58.2
 
-      # BƯỚC 3: Quét và xuất ra định dạng SARIF (Chuẩn của GitHub)
-      - name: Scan Artifact and generate SARIF
-        run: |
-          trivy fs *.war \
-            --format sarif \
-            --output trivy-results.sarif \
-            --severity CRITICAL,HIGH \
-            --scanners vuln \
-            --exit-code 0
+  #     # BƯỚC 3: Quét và xuất ra định dạng SARIF (Chuẩn của GitHub)
+  #     - name: Scan Artifact and generate SARIF
+  #       run: |
+  #         trivy fs *.war \
+  #           --format sarif \
+  #           --output trivy-results.sarif \
+  #           --severity CRITICAL,HIGH \
+  #           --scanners vuln \
+  #           --exit-code 0
 
-      # BƯỚC 4: Đẩy file SARIF lên hệ thống Security của GitHub
-      - name: Upload SARIF to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'
-          category: 'trivy-artifact-scan'
+  #     # BƯỚC 4: Đẩy file SARIF lên hệ thống Security của GitHub
+  #     - name: Upload SARIF to GitHub Security tab
+  #       uses: github/codeql-action/upload-sarif@v3
+  #       with:
+  #         sarif_file: 'trivy-results.sarif'
+  #         category: 'trivy-artifact-scan'
         
