@@ -67,7 +67,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: vprofile-app
-          path: .                      
+          path: .            
+          
+      - name: Download HTML Template
+        run: wget https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl
 
       - name: Scan Artifact and Export HTML
         uses: aquasecurity/trivy-action@v0.36.0
