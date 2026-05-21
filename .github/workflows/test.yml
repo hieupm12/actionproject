@@ -69,21 +69,18 @@ jobs:
           name: vprofile-app
           path: .                      
 
-      - name: Install Trivy
+      - name: Scan Artifact and Export HTML
         uses: aquasecurity/trivy-action@v0.36.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          cache: false
-
-      - name: Scan Artifact and Export HTML
-        run: |
-          trivy fs vprofile-v2.war \
-            --format template \
-            --template "@contrib/html.tpl" \
-            --output trivy-security-report.html \
-            --severity CRITICAL,HIGH \
-            --exit-code 0 
+          scan-type: 'fs'                
+          scan-ref: 'vprofile-v2.war'    
+          format: 'template'             
+          template: '@contrib/html.tpl'  
+          output: 'trivy-security-report.html'
+          severity: 'CRITICAL,HIGH'
+          exit-code: '0'
 
       - name: Upload Security Report
         uses: actions/upload-artifact@v7
