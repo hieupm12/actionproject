@@ -63,8 +63,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: Build
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+      - name: Download Artifact (.war)
+        uses: actions/download-artifact@v4
+        with:
+          name: vprofile-app
+          path: .                      
 
       - name: Install Trivy
         uses: aquasecurity/trivy-action@v0.36.0
@@ -73,21 +76,18 @@ jobs:
         with:
           cache: false
 
-      # THAY ĐỔI 1: Yêu cầu Trivy xuất ra file HTML tên là trivy-report.html
-      - name: Scan .war File and Export HTML
+      - name: Scan Artifact and Export HTML
         run: |
           trivy fs vprofile-v2.war \
             --format template \
             --template "@contrib/html.tpl" \
-            --output trivy-report.html \
+            --output trivy-security-report.html \
             --severity CRITICAL,HIGH \
             --exit-code 0 
 
-      # THAY ĐỔI 2: Upload file HTML đó lên kho Artifact của GitHub
       - name: Upload Security Report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
-          name: security-scan-report # Tên gói hàng chứa báo cáo
-          path: trivy-report.html    # Lấy đúng file vừa tạo
-          retention-days: 5  
-
+          name: security-scan-report          
+          path: trivy-security-report.html    
+          retention-days: 5
