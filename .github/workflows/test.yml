@@ -75,7 +75,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           scan-type: 'fs'
-          scan-ref: '.'                 
+          scan-ref: 'vprofile-v2.war'                 
           format: 'json'                 
           output: 'trivy-report.json'    
           severity: 'CRITICAL,HIGH'
